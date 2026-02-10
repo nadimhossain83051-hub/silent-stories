@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { User, Story, Category, Comment } from '../types';
 import { INITIAL_CATEGORIES, INITIAL_STORIES } from '../constants';
 
-const STORAGE_KEY = 'hindsight_platform_data_v1';
+const STORAGE_KEY = 'hindsight_platform_data_v2';
 
 interface PlatformData {
   users: User[];
@@ -16,13 +15,21 @@ interface PlatformData {
 
 export function usePlatformState() {
   const [data, setData] = useState<PlatformData>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return {
-        ...parsed,
-        currentUser: parsed.currentUser || null
-      };
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          users: parsed.users || [],
+          stories: parsed.stories || INITIAL_STORIES,
+          categories: parsed.categories || INITIAL_CATEGORIES,
+          comments: parsed.comments || [],
+          currentUser: parsed.currentUser || null,
+          emergencyMode: !!parsed.emergencyMode
+        };
+      }
+    } catch (e) {
+      console.error("Failed to load state from storage", e);
     }
     return {
       users: [],
@@ -35,7 +42,11 @@ export function usePlatformState() {
   });
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      console.error("Failed to save state to storage", e);
+    }
   }, [data]);
 
   const login = (user: User) => setData(prev => ({ ...prev, currentUser: user }));

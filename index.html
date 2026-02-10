@@ -11,10 +11,12 @@
     <style>
       * {
         letter-spacing: 0 !important;
+        word-spacing: normal !important;
       }
       body {
         font-family: 'Noto Sans Bengali', sans-serif;
         background-color: #f8fafc;
+        -webkit-font-smoothing: antialiased;
       }
       .no-scrollbar::-webkit-scrollbar {
         display: none;
@@ -24,28 +26,32 @@
         scrollbar-width: none;
       }
     </style>
-    <!-- Polyfill for process.env to prevent white screen crashes -->
+    <!-- Polyfill for process.env and global error logging -->
     <script>
       window.process = { env: { API_KEY: "" } };
+      window.onerror = function(msg, url, line, col, error) {
+        console.error("Global Error: ", msg, " at ", url, ":", line);
+        // Optional: show error on screen if in debug mode
+        return false;
+      };
     </script>
     <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.4",
-    "react-dom": "https://esm.sh/react-dom@^19.2.4",
-    "react-dom/client": "https://esm.sh/react-dom@^19.2.4/client",
-    "lucide-react": "https://esm.sh/lucide-react@^0.475.0",
-    "@google/genai": "https://esm.sh/@google/genai@^1.40.0",
-    "recharts": "https://esm.sh/recharts@^2.15.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/"
-  }
-}
-</script>
+    {
+      "imports": {
+        "react": "https://esm.sh/react@^19.2.4",
+        "react-dom": "https://esm.sh/react-dom@^19.2.4",
+        "react-dom/client": "https://esm.sh/react-dom@^19.2.4/client",
+        "lucide-react": "https://esm.sh/lucide-react@^0.475.0",
+        "@google/genai": "https://esm.sh/@google/genai@^1.40.0",
+        "recharts": "https://esm.sh/recharts@^2.15.0",
+        "react/": "https://esm.sh/react@^19.2.4/",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
+      }
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
-    <!-- Explicitly loading the entry point -->
     <script type="module" src="./index.tsx"></script>
   </body>
 </html>
