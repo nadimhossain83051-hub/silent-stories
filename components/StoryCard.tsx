@@ -3,9 +3,7 @@ import {
   ChevronDown, 
   ChevronUp, 
   Sparkles, 
-  Copy, 
   MessageSquare, 
-  Share2,
   ThumbsUp,
   Users,
   EyeOff
@@ -38,21 +36,20 @@ const StoryCard: React.FC<Props> = ({ story, platform }) => {
     let newLearned = [...story.reactions.learned];
     let newRelatable = [...story.reactions.relatable];
 
+    // Logic for 1 reaction only: toggle or switch
     if (type === 'learned') {
       if (userReactedLearned) {
         newLearned = newLearned.filter(id => id !== userId);
       } else {
         newLearned.push(userId);
-        // Remove from other reaction to maintain 1-reaction limit
-        newRelatable = newRelatable.filter(id => id !== userId);
+        newRelatable = newRelatable.filter(id => id !== userId); // Remove from other if exists
       }
     } else {
       if (userReactedRelatable) {
         newRelatable = newRelatable.filter(id => id !== userId);
       } else {
         newRelatable.push(userId);
-        // Remove from other reaction to maintain 1-reaction limit
-        newLearned = newLearned.filter(id => id !== userId);
+        newLearned = newLearned.filter(id => id !== userId); // Remove from other if exists
       }
     }
 
@@ -81,114 +78,111 @@ const StoryCard: React.FC<Props> = ({ story, platform }) => {
     setNewComment('');
   };
 
-  const copyInsights = () => {
-    if (!story.aiInsights) return;
-    const text = `ভুল থেকেই শিক্ষা:\n\nKey Lessons:\n${story.aiInsights.keyTakeaways.join('\n')}\n\nAdvice:\n${story.aiInsights.futureAdvice}`;
-    navigator.clipboard.writeText(text);
-    alert("Insights copied to clipboard!");
-  };
-
   const storyComments = platform.comments.filter((c: any) => c.storyId === story.id);
 
   return (
-    <div className={`bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col ${story.is18Plus ? 'ring-1 ring-amber-200' : ''}`}>
-      <div className="p-5 border-b border-slate-50 flex items-center justify-between">
+    <div className={`bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col overflow-hidden ${story.is18Plus ? 'ring-1 ring-amber-100' : ''}`}>
+      <div className="p-5 border-b border-slate-50 flex items-center justify-between bg-slate-50/20">
         <div className="flex items-center space-x-3">
-          <img src={genderIcon} alt="Avatar" className="w-10 h-10 rounded-full border border-slate-100" />
+          <img src={genderIcon} alt="Avatar" className="w-10 h-10 rounded-full border border-slate-200 bg-white" />
           <div>
-            <div className="flex items-center space-x-2">
-              <span className="font-semibold text-slate-900 text-sm">
-                {story.authorName}
-              </span>
-            </div>
-            <div className="flex items-center space-x-2 text-xs text-slate-400">
-              <span>{new Date(story.createdAt).toLocaleDateString()}</span>
-              <span>•</span>
-              <span className="text-indigo-600 font-medium">{story.category}</span>
+            <span className="font-bold text-slate-900 text-sm block">
+              {story.authorName}
+            </span>
+            <div className="flex items-center space-x-2 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+              <span>{new Date(story.createdAt).toLocaleDateString('bn-BD')}</span>
+              <span className="text-slate-200">•</span>
+              <span className="text-indigo-600">{story.category}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="p-5 space-y-4 flex-grow">
+      <div className="p-6 space-y-4 flex-grow">
         <div>
-          <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">ভুল</h4>
+          <h4 className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-1">ভুল</h4>
           <p className="text-slate-800 leading-relaxed font-bold text-lg">
             {showFull ? story.mistake : story.mistake.substring(0, 100) + (story.mistake.length > 100 ? '...' : '')}
           </p>
         </div>
 
         {showFull && (
-          <div className="space-y-4 pt-2 animate-in fade-in duration-300">
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-              <h4 className="text-[10px] font-bold text-slate-400 uppercase mb-1">প্রাপ্ত শিক্ষা</h4>
-              <p className="text-slate-800 font-semibold">{story.lessons}</p>
+          <div className="space-y-4 pt-2 animate-in fade-in slide-in-from-top-1 duration-300">
+            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+              <h4 className="text-[10px] font-black text-slate-400 uppercase mb-2">শিক্ষা</h4>
+              <p className="text-slate-700 font-semibold leading-relaxed">{story.lessons}</p>
             </div>
+            {story.advice && (
+              <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100">
+                <h4 className="text-[10px] font-black text-emerald-500 uppercase mb-2">পরামর্শ</h4>
+                <p className="text-emerald-900 font-bold">{story.advice}</p>
+              </div>
+            )}
           </div>
         )}
 
         <button 
           onClick={() => setShowFull(!showFull)}
-          className="text-indigo-600 text-xs font-bold flex items-center hover:text-indigo-700 uppercase tracking-widest"
+          className="text-indigo-600 text-[11px] font-black flex items-center hover:text-indigo-800 uppercase tracking-widest transition-colors"
         >
-          {showFull ? "সংক্ষিপ্ত করুন" : "বিস্তারিত পড়ুন"}
+          {showFull ? "সংক্ষিপ্ত করুন ↑" : "বিস্তারিত পড়ুন ↓"}
         </button>
       </div>
 
       {story.aiInsights && (
-        <div className="px-5 pb-5">
+        <div className="px-6 pb-4">
           <button 
             onClick={() => setShowAI(!showAI)}
-            className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${
-              showAI ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+            className={`w-full flex items-center justify-between p-3.5 rounded-2xl transition-all ${
+              showAI ? 'bg-slate-900 text-white shadow-xl' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >
             <div className="flex items-center space-x-2">
-              <Sparkles size={16} />
-              <span className="text-xs font-bold uppercase tracking-widest">AI বিশ্লেষণ</span>
+              <Sparkles size={16} className={showAI ? "text-sky-400" : "text-indigo-600"} />
+              <span className="text-[11px] font-black uppercase tracking-wider">AI বিশ্লেষণ</span>
             </div>
             {showAI ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
 
           {showAI && (
-            <div className="mt-2 p-4 bg-slate-900 text-slate-300 rounded-xl space-y-4 animate-in slide-in-from-top-2 duration-300">
-              <p className="text-sm font-medium italic">"{story.aiInsights.futureAdvice}"</p>
-              <ul className="space-y-2">
+            <div className="mt-2 p-5 bg-slate-900 text-slate-300 rounded-2xl space-y-4 animate-in slide-in-from-top-2 duration-300 border border-slate-800">
+              <p className="text-sm font-bold italic text-slate-100">"{story.aiInsights.futureAdvice}"</p>
+              <div className="space-y-2">
                 {story.aiInsights.keyTakeaways.map((item, i) => (
-                  <li key={i} className="text-xs flex items-start">
-                    <span className="mr-2 text-sky-400">•</span>
+                  <div key={i} className="text-xs flex items-start bg-white/5 p-2 rounded-lg">
+                    <span className="mr-2 text-sky-400 font-bold">#</span>
                     {item}
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           )}
         </div>
       )}
 
-      <div className="px-5 py-4 border-t border-slate-50 bg-slate-50/30 flex items-center justify-between">
+      <div className="px-6 py-4 border-t border-slate-50 bg-slate-50/30 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <button 
             onClick={() => handleReaction('learned')}
-            className={`flex items-center space-x-1.5 px-4 py-2 rounded-xl text-[10px] font-bold transition-all ${
+            className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-[10px] font-black transition-all ${
               userReactedLearned 
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' 
-                : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-400'
+                ? 'bg-indigo-600 text-white shadow-lg' 
+                : 'bg-white border border-slate-200 text-slate-600 hover:bg-indigo-50 hover:border-indigo-200'
             }`}
           >
-            <ThumbsUp size={12} />
+            <ThumbsUp size={14} />
             <span>শিখলাম ({story.reactions.learned.length})</span>
           </button>
           
           <button 
             onClick={() => handleReaction('relatable')}
-            className={`flex items-center space-x-1.5 px-4 py-2 rounded-xl text-[10px] font-bold transition-all ${
+            className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-[10px] font-black transition-all ${
               userReactedRelatable 
-                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-100' 
-                : 'bg-white border border-slate-200 text-slate-600 hover:border-emerald-400'
+                ? 'bg-emerald-600 text-white shadow-lg' 
+                : 'bg-white border border-slate-200 text-slate-600 hover:bg-emerald-50 hover:border-emerald-200'
             }`}
           >
-            <Users size={12} />
+            <Users size={14} />
             <span>মিল আছে ({story.reactions.relatable.length})</span>
           </button>
         </div>
@@ -196,40 +190,38 @@ const StoryCard: React.FC<Props> = ({ story, platform }) => {
         {story.allowComments && (
           <button 
             onClick={() => setShowComments(!showComments)}
-            className="text-slate-400 hover:text-indigo-600 p-2"
+            className={`p-2.5 rounded-xl transition-colors ${showComments ? 'bg-indigo-100 text-indigo-600' : 'text-slate-400 hover:bg-slate-100'}`}
           >
-            <MessageSquare size={18} />
+            <MessageSquare size={20} />
           </button>
         )}
       </div>
 
       {showComments && story.allowComments && (
-        <div className="border-t border-slate-100 bg-white p-5 space-y-4">
+        <div className="border-t border-slate-100 bg-white p-6 space-y-4">
           <div className="space-y-3 max-h-48 overflow-y-auto pr-2 no-scrollbar">
             {storyComments.length > 0 ? (
               storyComments.map((comment: any) => (
                 <div key={comment.id} className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase">@{comment.userName}</span>
-                  </div>
-                  <p className="text-sm text-slate-800 font-medium">{comment.content}</p>
+                  <span className="text-[10px] font-black text-slate-400 uppercase block mb-1">@{comment.userName}</span>
+                  <p className="text-sm text-slate-700 font-semibold">{comment.content}</p>
                 </div>
               ))
             ) : (
-              <p className="text-center text-slate-300 text-xs py-4 italic">কোনো মন্তব্য নেই।</p>
+              <p className="text-center text-slate-300 text-xs py-4 italic font-bold">এখনো কোনো মন্তব্য নেই।</p>
             )}
           </div>
           <div className="flex space-x-2 pt-2">
             <input 
               type="text" 
-              placeholder="মন্তব্য লিখুন..."
+              placeholder="একটি মন্তব্য লিখুন..."
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              className="flex-grow bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600/10 font-medium"
+              className="flex-grow bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600/10 font-bold"
             />
             <button 
               onClick={submitComment}
-              className="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-indigo-600 transition-colors"
+              className="bg-slate-900 text-white px-5 rounded-xl text-xs font-black hover:bg-indigo-600 transition-all shadow-md active:scale-95"
             >
               পাঠান
             </button>
