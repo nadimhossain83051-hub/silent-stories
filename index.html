@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-      /* Fix Bengali character spacing issues */
+      /* Prevent Bengali character fragmentation */
       * {
         letter-spacing: 0 !important;
         word-spacing: normal !important;
@@ -19,18 +19,33 @@
         background-color: #fcfdfe;
         -webkit-font-smoothing: antialiased;
         color: #1e293b;
+        margin: 0;
       }
       .no-scrollbar::-webkit-scrollbar { display: none; }
       .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      
+      /* Fallback for white screen */
+      #root:empty::before {
+        content: 'লোড হচ্ছে... দয়া করে অপেক্ষা করুন।';
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-weight: bold;
+        color: #6366f1;
+      }
     </style>
     <script>
-      // Crucial: Fix for libraries expecting Node.js environment
-      window.process = { env: { API_KEY: "" } };
+      // Global shim for libraries expecting process.env
+      window.process = { 
+        env: { API_KEY: "" },
+        cwd: function() { return "/"; }
+      };
       
-      // Error tracker for production debugging
+      // Production Error Tracking
       window.onerror = function(msg, url, line, col, error) {
-        console.error("Runtime Error: " + msg + "\nAt: " + url + ":" + line);
-        return false;
+        console.error("Runtime Error: " + msg + "\nLocation: " + url + ":" + line);
+        return false; 
       };
     </script>
     <script type="importmap">
@@ -50,6 +65,9 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="./index.tsx"></script>
+    <script type="module">
+      // Ensure we import index.tsx correctly
+      import "./index.tsx";
+    </script>
   </body>
 </html>

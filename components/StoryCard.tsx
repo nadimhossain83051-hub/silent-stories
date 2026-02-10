@@ -35,20 +35,24 @@ const StoryCard: React.FC<Props> = ({ story, platform }) => {
     let newLearned = [...story.reactions.learned];
     let newRelatable = [...story.reactions.relatable];
 
-    // Strictly 1 reaction limit: If reacting to one, remove from the other
+    // Strictly 1 reaction limit logic
     if (type === 'learned') {
       if (userReactedLearned) {
+        // Toggle off if already active
         newLearned = newLearned.filter(id => id !== userId);
       } else {
+        // Add to learned and ensure removed from relatable
         newLearned.push(userId);
-        newRelatable = newRelatable.filter(id => id !== userId); // Remove from other
+        newRelatable = newRelatable.filter(id => id !== userId);
       }
     } else {
       if (userReactedRelatable) {
+        // Toggle off if already active
         newRelatable = newRelatable.filter(id => id !== userId);
       } else {
+        // Add to relatable and ensure removed from learned
         newRelatable.push(userId);
-        newLearned = newLearned.filter(id => id !== userId); // Remove from other
+        newLearned = newLearned.filter(id => id !== userId);
       }
     }
 
@@ -108,27 +112,27 @@ const StoryCard: React.FC<Props> = ({ story, platform }) => {
           </div>
         )}
 
-        <button onClick={() => setShowFull(!showFull)} className="text-indigo-600 text-[11px] font-black uppercase tracking-widest">
+        <button onClick={() => setShowFull(!showFull)} className="text-indigo-600 text-[11px] font-black uppercase tracking-widest hover:text-indigo-800 transition-colors">
           {showFull ? "সংক্ষিপ্ত করুন ↑" : "বিস্তারিত পড়ুন ↓"}
         </button>
       </div>
 
       {story.aiInsights && (
         <div className="px-6 pb-4">
-          <button onClick={() => setShowAI(!showAI)} className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all ${showAI ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'}`}>
+          <button onClick={() => setShowAI(!showAI)} className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all ${showAI ? 'bg-slate-900 text-white shadow-lg shadow-slate-200' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
             <div className="flex items-center space-x-2">
-              <Sparkles size={16} className="text-indigo-600" />
-              <span className="text-[11px] font-black uppercase">AI বিশ্লেষণ</span>
+              <Sparkles size={16} className={showAI ? "text-sky-400" : "text-indigo-600"} />
+              <span className="text-[11px] font-black uppercase tracking-wider">AI বিশ্লেষণ</span>
             </div>
             {showAI ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
           {showAI && (
             <div className="mt-2 p-5 bg-slate-900 text-slate-300 rounded-2xl border border-slate-800 animate-in slide-in-from-top-2">
               <p className="text-sm font-bold text-slate-100 mb-2 italic">"{story.aiInsights.futureAdvice}"</p>
-              <div className="space-y-1">
+              <div className="space-y-2">
                 {story.aiInsights.keyTakeaways.map((item, i) => (
-                  <div key={i} className="text-[11px] flex items-start">
-                    <span className="mr-2 text-indigo-400 font-black">•</span>
+                  <div key={i} className="text-[11px] flex items-start bg-white/5 p-2 rounded-lg">
+                    <span className="mr-2 text-sky-400 font-black">•</span>
                     {item}
                   </div>
                 ))}
@@ -140,38 +144,65 @@ const StoryCard: React.FC<Props> = ({ story, platform }) => {
 
       <div className="px-6 py-4 border-t border-slate-50 bg-slate-50/30 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <button onClick={() => handleReaction('learned')} className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-[10px] font-black transition-all ${userReactedLearned ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white border text-slate-600'}`}>
+          <button 
+            onClick={() => handleReaction('learned')} 
+            className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-[10px] font-black transition-all ${
+              userReactedLearned 
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' 
+                : 'bg-white border border-slate-200 text-slate-600 hover:bg-indigo-50'
+            }`}
+          >
             <ThumbsUp size={14} />
             <span>শিখলাম ({story.reactions.learned.length})</span>
           </button>
-          <button onClick={() => handleReaction('relatable')} className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-[10px] font-black transition-all ${userReactedRelatable ? 'bg-emerald-600 text-white shadow-lg' : 'bg-white border text-slate-600'}`}>
+          
+          <button 
+            onClick={() => handleReaction('relatable')} 
+            className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-[10px] font-black transition-all ${
+              userReactedRelatable 
+                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-100' 
+                : 'bg-white border border-slate-200 text-slate-600 hover:bg-emerald-50'
+            }`}
+          >
             <Users size={14} />
             <span>মিল আছে ({story.reactions.relatable.length})</span>
           </button>
         </div>
+        
         {story.allowComments && (
-          <button onClick={() => setShowComments(!showComments)} className={`p-2.5 rounded-xl ${showComments ? 'bg-indigo-100 text-indigo-600' : 'text-slate-400'}`}>
+          <button 
+            onClick={() => setShowComments(!showComments)} 
+            className={`p-2.5 rounded-xl transition-all ${showComments ? 'bg-indigo-100 text-indigo-600 scale-110 shadow-sm' : 'text-slate-400 hover:bg-slate-100'}`}
+          >
             <MessageSquare size={20} />
           </button>
         )}
       </div>
 
       {showComments && story.allowComments && (
-        <div className="border-t border-slate-100 bg-white p-6 space-y-4">
+        <div className="border-t border-slate-100 bg-white p-6 space-y-4 animate-in slide-in-from-bottom-2 duration-300">
           <div className="space-y-3 max-h-48 overflow-y-auto no-scrollbar">
             {storyComments.length > 0 ? storyComments.map((comment: any) => (
               <div key={comment.id} className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                <span className="text-[10px] font-black text-slate-400 uppercase">@{comment.userName}</span>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 block">@{comment.userName}</span>
                 <p className="text-sm text-slate-700 font-semibold">{comment.content}</p>
               </div>
-            )) : <p className="text-center text-slate-300 text-xs py-4 font-bold">কোনো মন্তব্য নেই।</p>}
+            )) : <p className="text-center text-slate-300 text-xs py-4 font-bold">এখনো কোনো মন্তব্য নেই।</p>}
           </div>
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 pt-2 border-t border-slate-50">
             <input 
-              type="text" placeholder="মন্তব্য লিখুন..." value={newComment} onChange={(e) => setNewComment(e.target.value)}
-              className="flex-grow bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none"
+              type="text" 
+              placeholder="একটি মন্তব্য লিখুন..." 
+              value={newComment} 
+              onChange={(e) => setNewComment(e.target.value)}
+              className="flex-grow bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-600/10 transition-all"
             />
-            <button onClick={submitComment} className="bg-slate-900 text-white px-5 rounded-xl text-xs font-black shadow-md">পাঠান</button>
+            <button 
+              onClick={submitComment} 
+              className="bg-slate-900 text-white px-5 rounded-xl text-xs font-black shadow-md hover:bg-indigo-600 active:scale-95 transition-all"
+            >
+              পাঠান
+            </button>
           </div>
         </div>
       )}
