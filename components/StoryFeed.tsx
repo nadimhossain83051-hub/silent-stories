@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { Search, AlertCircle, Lock, UserPlus, LogIn } from 'lucide-react';
-import { Story, Category } from '../types';
-import StoryCard from './StoryCard';
+import { Story, Category } from '../types.ts';
+import StoryCard from './StoryCard.tsx';
 
 interface Props {
   platform: any;
@@ -26,7 +25,7 @@ const StoryFeed: React.FC<Props> = ({ platform, onNavigate }) => {
 
   return (
     <div className="space-y-8">
-      {/* Blue Hero Section - Professional Consolidated Guest View */}
+      {/* Blue Hero Section */}
       {!isLoggedIn && (
         <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-[2.5rem] p-10 md:p-16 text-white shadow-2xl relative overflow-hidden text-center md:text-left flex flex-col md:flex-row items-center gap-10">
           <div className="max-w-2xl relative z-10 flex-grow space-y-6">
@@ -35,7 +34,6 @@ const StoryFeed: React.FC<Props> = ({ platform, onNavigate }) => {
               আপনার জীবনের কঠিন অভিজ্ঞতাগুলো শেয়ার করুন সম্পূর্ণ বেনামে। অন্যের ভুল থেকে শিক্ষা নিন এবং নিজের গল্পে অন্যকে অনুপ্রাণিত করুন।
             </p>
             
-            {/* Lock Message inside Blue Box */}
             <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 inline-block text-left w-full md:w-auto">
                <div className="flex items-center space-x-4 mb-2">
                  <div className="bg-white p-2 rounded-xl text-indigo-700">
@@ -64,21 +62,18 @@ const StoryFeed: React.FC<Props> = ({ platform, onNavigate }) => {
             </div>
           </div>
           
-          {/* Decorative Large Lock Icon in background of Blue Box */}
           <div className="hidden lg:block relative z-10 opacity-20">
             <Lock size={200} />
           </div>
 
-          {/* Decorative Orbs */}
           <div className="absolute -right-10 -bottom-10 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
           <div className="absolute left-20 -top-10 w-48 h-48 bg-indigo-400/20 rounded-full blur-2xl"></div>
         </div>
       )}
 
-      {/* Main Feed Logic - Only renders content if logged in */}
+      {/* Main Feed Logic */}
       {isLoggedIn && (
         <div className="space-y-8 animate-in fade-in duration-500">
-          {/* Standalone Search Bar for Logged-in Users */}
           <div className="relative group max-w-2xl mx-auto">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={24} />
             <input 
@@ -99,7 +94,6 @@ const StoryFeed: React.FC<Props> = ({ platform, onNavigate }) => {
             </div>
           )}
 
-          {/* Scrollable Category Slider - Professional Mobile Swiping */}
           <div className="relative">
             <div className="flex overflow-x-auto whitespace-nowrap gap-3 pb-4 no-scrollbar scroll-smooth">
               <button
@@ -126,11 +120,9 @@ const StoryFeed: React.FC<Props> = ({ platform, onNavigate }) => {
                 </button>
               ))}
             </div>
-            {/* Fade effect indicator for swipeable categories */}
             <div className="absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-[#f8fafc] to-transparent pointer-events-none md:hidden"></div>
           </div>
 
-          {/* Grid of Stories */}
           {filteredStories.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
               {filteredStories.map((story: Story) => (

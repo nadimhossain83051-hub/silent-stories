@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   ShieldCheck, 
@@ -11,12 +10,12 @@ import {
   X,
   Lock as LockIcon
 } from 'lucide-react';
-import { usePlatformState } from './hooks/usePlatformState';
-import StoryFeed from './components/StoryFeed';
-import StoryForm from './components/StoryForm';
-import AdminDashboard from './components/AdminDashboard';
-import AuthView from './components/AuthView';
-import AboutUs from './components/AboutUs';
+import { usePlatformState } from './hooks/usePlatformState.ts';
+import StoryFeed from './components/StoryFeed.tsx';
+import StoryForm from './components/StoryForm.tsx';
+import AdminDashboard from './components/AdminDashboard.tsx';
+import AuthView from './components/AuthView.tsx';
+import AboutUs from './components/AboutUs.tsx';
 
 type View = 'feed' | 'post' | 'admin' | 'about' | 'auth';
 
@@ -27,6 +26,9 @@ const App: React.FC = () => {
   const [showAdminPrompt, setShowAdminPrompt] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
+  
+  // Secret Dev Trigger
+  const [logoClicks, setLogoClicks] = useState(0);
 
   const isAdmin = (platform.currentUser?.isAdmin) || isAdminUnlocked;
   const isLoggedIn = !!platform.currentUser;
@@ -47,6 +49,15 @@ const App: React.FC = () => {
     } else {
       alert("ভুল পাসওয়ার্ড। আবার চেষ্টা করুন।");
       setAdminPassword('');
+    }
+  };
+
+  const handleSecretTrigger = () => {
+    const next = logoClicks + 1;
+    setLogoClicks(next);
+    if (next >= 5) {
+      alert('অ্যাডমিন মোড সক্রিয় হয়েছে! ফুটার থেকে অ্যাডমিন আইকনে ক্লিক করুন।');
+      setLogoClicks(0);
     }
   };
 
@@ -71,7 +82,10 @@ const App: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <div 
             className="flex items-center space-x-2 cursor-pointer" 
-            onClick={() => navigate('feed')}
+            onClick={() => {
+              navigate('feed');
+              handleSecretTrigger();
+            }}
           >
             <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
               <ShieldCheck size={24} />
