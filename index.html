@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-      /* Prevent Bengali character spacing issues */
+      /* Fix Bengali character spacing issues */
       * {
         letter-spacing: 0 !important;
         word-spacing: normal !important;
@@ -20,20 +20,16 @@
         -webkit-font-smoothing: antialiased;
         color: #1e293b;
       }
-      .no-scrollbar::-webkit-scrollbar {
-        display: none;
-      }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
     <script>
-      // Robust process polyfill to prevent runtime crashes
-      window.process = { 
-        env: { 
-          API_KEY: "" 
-        } 
-      };
-      // Error logging for debugging
+      // Crucial: Fix for libraries expecting Node.js environment
+      window.process = { env: { API_KEY: "" } };
+      
+      // Error tracker for production debugging
       window.onerror = function(msg, url, line, col, error) {
-        console.error("Platform Error: ", msg, " at ", url, ":", line);
+        console.error("Runtime Error: " + msg + "\nAt: " + url + ":" + line);
         return false;
       };
     </script>
